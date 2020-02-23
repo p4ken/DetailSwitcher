@@ -1,4 +1,8 @@
 #include "dllmain.hpp"
+
+#include "connect/panel.h"
+#include "connect/setting.h"
+
 wchar_t g_module_dir[MAX_PATH];
 
 #define MAX_DETAILMODULE_NUM 64
@@ -10,7 +14,7 @@ typedef void (WINAPI* DETAILMODULE_ATSDISPOSE)(void);
 typedef int (WINAPI* DETAILMODULE_ATSGETPLUGINVERSION)(void);
 typedef void (WINAPI* DETAILMODULE_ATSSETVEHICLESPEC)(ATS_VEHICLESPEC);
 typedef void (WINAPI* DETAILMODULE_ATSINITIALIZE)(int);
-typedef ATS_HANDLES (WINAPI* DETAILMODULE_ATSELAPSE)(ATS_VEHICLESTATE, int*, int*);
+typedef ATS_HANDLES(WINAPI* DETAILMODULE_ATSELAPSE)(ATS_VEHICLESTATE, int*, int*);
 typedef void (WINAPI* DETAILMODULE_ATSSETPOWER)(int);
 typedef void (WINAPI* DETAILMODULE_ATSSETBRAKE)(int);
 typedef void (WINAPI* DETAILMODULE_ATSSETREVERSER)(int);
@@ -24,24 +28,24 @@ typedef void (WINAPI* DETAILMODULE_ATSSETBEACONDATA)(ATS_BEACONDATA);
 
 struct ST_DETAILMODULE_ATS_DELEGATE_FUNC
 {
-    HMODULE hm_dll;
-    DETAILMODULE_ATSLOAD atsLoad;
-    DETAILMODULE_ATSDISPOSE atsDispose;
-    DETAILMODULE_ATSGETPLUGINVERSION atsGetPluginVersion;
-    DETAILMODULE_ATSSETVEHICLESPEC atsSetVehicleSpec;
-    DETAILMODULE_ATSINITIALIZE atsInitialize;
-    DETAILMODULE_ATSELAPSE atsElapse;
-    DETAILMODULE_ATSSETPOWER atsSetPower;
-    DETAILMODULE_ATSSETBRAKE atsSetBrake;
-    DETAILMODULE_ATSSETREVERSER atsSetReverser;
-    DETAILMODULE_ATSKEYDOWN atsKeyDown;
-    DETAILMODULE_ATSKEYUP atsKeyUp;
-    DETAILMODULE_ATSHORNBLOW atsHornBlow;
-    DETAILMODULE_ATSDOOROPEN atsDoorOpen;
-    DETAILMODULE_ATSDOORCLOSE atsDoorClose;
-    DETAILMODULE_ATSSETSIGNAL atsSetSignal;
-    DETAILMODULE_ATSSETBEACONDATA atsSetBeaconData;
-    ATS_HANDLES last_handle;
+	HMODULE hm_dll;
+	DETAILMODULE_ATSLOAD atsLoad;
+	DETAILMODULE_ATSDISPOSE atsDispose;
+	DETAILMODULE_ATSGETPLUGINVERSION atsGetPluginVersion;
+	DETAILMODULE_ATSSETVEHICLESPEC atsSetVehicleSpec;
+	DETAILMODULE_ATSINITIALIZE atsInitialize;
+	DETAILMODULE_ATSELAPSE atsElapse;
+	DETAILMODULE_ATSSETPOWER atsSetPower;
+	DETAILMODULE_ATSSETBRAKE atsSetBrake;
+	DETAILMODULE_ATSSETREVERSER atsSetReverser;
+	DETAILMODULE_ATSKEYDOWN atsKeyDown;
+	DETAILMODULE_ATSKEYUP atsKeyUp;
+	DETAILMODULE_ATSHORNBLOW atsHornBlow;
+	DETAILMODULE_ATSDOOROPEN atsDoorOpen;
+	DETAILMODULE_ATSDOORCLOSE atsDoorClose;
+	DETAILMODULE_ATSSETSIGNAL atsSetSignal;
+	DETAILMODULE_ATSSETBEACONDATA atsSetBeaconData;
+	ATS_HANDLES last_handle;
 };
 
 int g_num_of_detailmodules;
@@ -51,41 +55,44 @@ ATS_HANDLES g_handles[2];
 
 bool g_first_time;
 
-#include <sys/stat.h>
+Setting g_setting;
+Panel g_panel(g_setting);
+
 #include <stdio.h>
+#include <sys/stat.h>
 
 BOOL WINAPI DllMain(
-					HINSTANCE hinstDLL,  // DLL モジュールのハンドル
-					DWORD fdwReason,     // 関数を呼び出す理由
-					LPVOID lpvReserved   // 予約済み
-					)
+	HINSTANCE hinstDLL,  // DLL モジュールのハンドル
+	DWORD fdwReason,     // 関数を呼び出す理由
+	LPVOID lpvReserved   // 予約済み
+)
 {
 	switch (fdwReason)
 	{
 	case DLL_PROCESS_ATTACH:
 	case DLL_THREAD_ATTACH:
 
-        {
-            wchar_t fullpath[MAX_PATH];
-            wchar_t drive[MAX_PATH],
-                    dir[MAX_PATH];
+	{
+		wchar_t fullpath[MAX_PATH];
+		wchar_t drive[MAX_PATH],
+			dir[MAX_PATH];
 
-            GetModuleFileNameW(hinstDLL, fullpath, MAX_PATH);
-            _wsplitpath_s(fullpath, drive, MAX_PATH, dir, MAX_PATH, 0, 0, 0, 0);
+		GetModuleFileNameW(hinstDLL, fullpath, MAX_PATH);
+		_wsplitpath_s(fullpath, drive, MAX_PATH, dir, MAX_PATH, 0, 0, 0, 0);
 
-            wcscpy(g_module_dir, drive);
-            wcscat(g_module_dir, dir);
-        }
-		
-        break;
+		wcscpy(g_module_dir, drive);
+		wcscat(g_module_dir, dir);
+	}
+
+	break;
 
 	case DLL_THREAD_DETACH:
-        break;
-    case DLL_PROCESS_DETACH:
-        {
-            atsDispose();
-        }
-        break;
+		break;
+	case DLL_PROCESS_DETACH:
+	{
+		atsDispose();
+	}
+	break;
 	}
 
 	return true;
@@ -94,124 +101,124 @@ BOOL WINAPI DllMain(
 // Called when this plug-in is loaded
 void WINAPI atsLoad()
 {
-  // MessageBox(NULL, TEXT("atsLoad"), TEXT("メッセージボックス"), MB_OK);
+	// MessageBox(NULL, TEXT("atsLoad"), TEXT("メッセージボックス"), MB_OK);
 
-    wchar_t detailmodules_txt_path[MAX_PATH];
+	wchar_t detailmodules_txt_path[MAX_PATH];
 
-    g_first_time = true;
+	g_first_time = true;
 
-    int ret;
-    {
-        struct _stat buf;
+	int ret;
+	{
+		struct _stat buf;
 
-        g_num_of_detailmodules = 0;
-        memset(g_detailmodules, 0, sizeof(ST_DETAILMODULE_ATS_DELEGATE_FUNC) * MAX_DETAILMODULE_NUM);
-        memset(g_handles, 0, sizeof(ATS_HANDLES) * 2);
+		g_num_of_detailmodules = 0;
+		memset(g_detailmodules, 0, sizeof(ST_DETAILMODULE_ATS_DELEGATE_FUNC) * MAX_DETAILMODULE_NUM);
+		memset(g_handles, 0, sizeof(ATS_HANDLES) * 2);
 
-        wcscpy(detailmodules_txt_path, g_module_dir);
-        wcscat(detailmodules_txt_path, L"\\detailmodules.txt");
-        
-        ret = _wstat(detailmodules_txt_path, &buf);
-    }
+		wcscpy(detailmodules_txt_path, g_module_dir);
+		wcscat(detailmodules_txt_path, L"\\detailmodules.txt");
 
-    if (!ret)
-    {
-        FILE* fp = _wfopen(detailmodules_txt_path, L"r");
+		ret = _wstat(detailmodules_txt_path, &buf);
+	}
 
-        while (!feof(fp))
-        {
-            char module_path[MAX_PATH];
-            wchar_t module_full_path[MAX_PATH],
-                    module_path_wcs[MAX_PATH];
+	if (!ret)
+	{
+		FILE* fp = _wfopen(detailmodules_txt_path, L"r");
 
-            memset(module_path, 0, sizeof(char) * MAX_PATH);
+		while (!feof(fp))
+		{
+			char module_path[MAX_PATH];
+			wchar_t module_full_path[MAX_PATH],
+				module_path_wcs[MAX_PATH];
 
-            fgets(module_path, MAX_PATH, fp);
+			memset(module_path, 0, sizeof(char) * MAX_PATH);
 
-            {
-                char* p = strchr(module_path, 10);
+			fgets(module_path, MAX_PATH, fp);
 
-                if (p)
-                {
-                    *p = 0;
-                }
-            }
+			{
+				char* p = strchr(module_path, 10);
 
-            wcscpy(module_full_path, g_module_dir);
-            mbstowcs(module_path_wcs, module_path, MAX_PATH);
-//            wcscat(module_full_path, L"..\\..\\Plugin\\");
-            wcscat(module_full_path, module_path_wcs);
+				if (p)
+				{
+					*p = 0;
+				}
+			}
 
-            {
-                struct _stat buf;
-                int exists;
-                
-                exists = _wstat(module_full_path, &buf);
+			wcscpy(module_full_path, g_module_dir);
+			mbstowcs(module_path_wcs, module_path, MAX_PATH);
+			//            wcscat(module_full_path, L"..\\..\\Plugin\\");
+			wcscat(module_full_path, module_path_wcs);
 
-                if (!exists)
-                {
-                    g_detailmodules[g_num_of_detailmodules].hm_dll = LoadLibrary(module_full_path);
+			{
+				struct _stat buf;
+				int exists;
 
-                    g_detailmodules[g_num_of_detailmodules].atsLoad = reinterpret_cast<DETAILMODULE_ATSLOAD>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "Load"));
-                    g_detailmodules[g_num_of_detailmodules].atsDispose = reinterpret_cast<DETAILMODULE_ATSDISPOSE>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "Dispose"));
-                    g_detailmodules[g_num_of_detailmodules].atsGetPluginVersion = reinterpret_cast<DETAILMODULE_ATSGETPLUGINVERSION>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "GetPluginVersion"));
-                    g_detailmodules[g_num_of_detailmodules].atsSetVehicleSpec = reinterpret_cast<DETAILMODULE_ATSSETVEHICLESPEC>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "SetVehicleSpec"));
-                    g_detailmodules[g_num_of_detailmodules].atsInitialize = reinterpret_cast<DETAILMODULE_ATSINITIALIZE>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "Initialize"));
-                    g_detailmodules[g_num_of_detailmodules].atsElapse = reinterpret_cast<DETAILMODULE_ATSELAPSE>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "Elapse"));
-                    g_detailmodules[g_num_of_detailmodules].atsSetPower = reinterpret_cast<DETAILMODULE_ATSSETPOWER>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "SetPower"));
-                    g_detailmodules[g_num_of_detailmodules].atsSetBrake = reinterpret_cast<DETAILMODULE_ATSSETBRAKE>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "SetBrake"));
-                    g_detailmodules[g_num_of_detailmodules].atsSetReverser = reinterpret_cast<DETAILMODULE_ATSSETREVERSER>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "SetReverser"));
-                    g_detailmodules[g_num_of_detailmodules].atsKeyDown = reinterpret_cast<DETAILMODULE_ATSKEYDOWN>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "KeyDown"));
-                    g_detailmodules[g_num_of_detailmodules].atsKeyUp = reinterpret_cast<DETAILMODULE_ATSKEYUP>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "KeyUp"));
-                    g_detailmodules[g_num_of_detailmodules].atsHornBlow = reinterpret_cast<DETAILMODULE_ATSHORNBLOW>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "HornBlow"));
-                    g_detailmodules[g_num_of_detailmodules].atsDoorOpen = reinterpret_cast<DETAILMODULE_ATSDOOROPEN>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "DoorOpen"));
-                    g_detailmodules[g_num_of_detailmodules].atsDoorClose = reinterpret_cast<DETAILMODULE_ATSDOORCLOSE>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "DoorClose"));
-                    g_detailmodules[g_num_of_detailmodules].atsSetSignal = reinterpret_cast<DETAILMODULE_ATSSETSIGNAL>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "SetSignal"));
-                    g_detailmodules[g_num_of_detailmodules].atsSetBeaconData = reinterpret_cast<DETAILMODULE_ATSSETBEACONDATA>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "SetBeaconData"));
+				exists = _wstat(module_full_path, &buf);
 
-                    memset(&g_detailmodules[g_num_of_detailmodules].last_handle, 0, sizeof(ATS_HANDLES));
+				if (!exists)
+				{
+					g_detailmodules[g_num_of_detailmodules].hm_dll = LoadLibrary(module_full_path);
+
+					g_detailmodules[g_num_of_detailmodules].atsLoad = reinterpret_cast<DETAILMODULE_ATSLOAD>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "Load"));
+					g_detailmodules[g_num_of_detailmodules].atsDispose = reinterpret_cast<DETAILMODULE_ATSDISPOSE>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "Dispose"));
+					g_detailmodules[g_num_of_detailmodules].atsGetPluginVersion = reinterpret_cast<DETAILMODULE_ATSGETPLUGINVERSION>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "GetPluginVersion"));
+					g_detailmodules[g_num_of_detailmodules].atsSetVehicleSpec = reinterpret_cast<DETAILMODULE_ATSSETVEHICLESPEC>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "SetVehicleSpec"));
+					g_detailmodules[g_num_of_detailmodules].atsInitialize = reinterpret_cast<DETAILMODULE_ATSINITIALIZE>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "Initialize"));
+					g_detailmodules[g_num_of_detailmodules].atsElapse = reinterpret_cast<DETAILMODULE_ATSELAPSE>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "Elapse"));
+					g_detailmodules[g_num_of_detailmodules].atsSetPower = reinterpret_cast<DETAILMODULE_ATSSETPOWER>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "SetPower"));
+					g_detailmodules[g_num_of_detailmodules].atsSetBrake = reinterpret_cast<DETAILMODULE_ATSSETBRAKE>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "SetBrake"));
+					g_detailmodules[g_num_of_detailmodules].atsSetReverser = reinterpret_cast<DETAILMODULE_ATSSETREVERSER>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "SetReverser"));
+					g_detailmodules[g_num_of_detailmodules].atsKeyDown = reinterpret_cast<DETAILMODULE_ATSKEYDOWN>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "KeyDown"));
+					g_detailmodules[g_num_of_detailmodules].atsKeyUp = reinterpret_cast<DETAILMODULE_ATSKEYUP>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "KeyUp"));
+					g_detailmodules[g_num_of_detailmodules].atsHornBlow = reinterpret_cast<DETAILMODULE_ATSHORNBLOW>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "HornBlow"));
+					g_detailmodules[g_num_of_detailmodules].atsDoorOpen = reinterpret_cast<DETAILMODULE_ATSDOOROPEN>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "DoorOpen"));
+					g_detailmodules[g_num_of_detailmodules].atsDoorClose = reinterpret_cast<DETAILMODULE_ATSDOORCLOSE>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "DoorClose"));
+					g_detailmodules[g_num_of_detailmodules].atsSetSignal = reinterpret_cast<DETAILMODULE_ATSSETSIGNAL>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "SetSignal"));
+					g_detailmodules[g_num_of_detailmodules].atsSetBeaconData = reinterpret_cast<DETAILMODULE_ATSSETBEACONDATA>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "SetBeaconData"));
+
+					memset(&g_detailmodules[g_num_of_detailmodules].last_handle, 0, sizeof(ATS_HANDLES));
 
 					if (g_detailmodules[g_num_of_detailmodules].atsLoad != NULL)
 					{
 						g_detailmodules[g_num_of_detailmodules].atsLoad();
 					}
 
-                    ++g_num_of_detailmodules;
-                }
-            }
-        }
+					++g_num_of_detailmodules;
+				}
+			}
+		}
 
-        fclose(fp);
-    }
-    else
-    {
-        char* p = 0; *p = 1;
-    }
+		fclose(fp);
+	}
+	else
+	{
+		char* p = 0; *p = 1;
+	}
 }
 
 // Called when this plug-in is unloaded
 void WINAPI atsDispose()
 {
-  // MessageBox(NULL, TEXT("atsDispose"), TEXT("メッセージボックス"), MB_OK);
+	// MessageBox(NULL, TEXT("atsDispose"), TEXT("メッセージボックス"), MB_OK);
 
-    for (int i = 0; i < g_num_of_detailmodules; ++i)
-    {
+	for (int i = 0; i < g_num_of_detailmodules; ++i)
+	{
 		if (g_detailmodules[i].atsDispose != NULL)
 		{
 			g_detailmodules[i].atsDispose();
 		}
-        FreeLibrary(g_detailmodules[i].hm_dll);
-    }
+		FreeLibrary(g_detailmodules[i].hm_dll);
+	}
 
-    memset(g_detailmodules, 0, sizeof(ST_DETAILMODULE_ATS_DELEGATE_FUNC));
-    g_num_of_detailmodules = 0;
-    memset(g_handles, 0, sizeof(ATS_HANDLES));
+	memset(g_detailmodules, 0, sizeof(ST_DETAILMODULE_ATS_DELEGATE_FUNC));
+	g_num_of_detailmodules = 0;
+	memset(g_handles, 0, sizeof(ATS_HANDLES));
 }
 
 // Returns the version numbers of ATS plug-in
 int WINAPI atsGetPluginVersion()
 {
-  // MessageBox(NULL, TEXT("atsGetPluginVersion"), TEXT("メッセージボックス"), MB_OK);
+	// MessageBox(NULL, TEXT("atsGetPluginVersion"), TEXT("メッセージボックス"), MB_OK);
 
 	return ATS_VERSION;
 }
@@ -219,44 +226,46 @@ int WINAPI atsGetPluginVersion()
 // Called when the train is loaded
 void WINAPI atsSetVehicleSpec(ATS_VEHICLESPEC vspec)
 {
-  // MessageBox(NULL, TEXT("atsSetVehicleSpec"), TEXT("メッセージボックス"), MB_OK);
+	// MessageBox(NULL, TEXT("atsSetVehicleSpec"), TEXT("メッセージボックス"), MB_OK);
 
-    for (int i = 0; i < g_num_of_detailmodules; ++i)
-    {
+	for (int i = 0; i < g_num_of_detailmodules; ++i)
+	{
 		if (g_detailmodules[i].atsSetVehicleSpec != NULL)
 		{
 			g_detailmodules[i].atsSetVehicleSpec(vspec);
 		}
-    }
+	}
 }
 
 // Called when the game is started
 void WINAPI atsInitialize(int param)
 {
-  // MessageBox(NULL, TEXT("atsInitialize"), TEXT("メッセージボックス"), MB_OK);
+	// MessageBox(NULL, TEXT("atsInitialize"), TEXT("メッセージボックス"), MB_OK);
 
-    for (int i = 0; i < g_num_of_detailmodules; ++i)
-    {
+	for (int i = 0; i < g_num_of_detailmodules; ++i)
+	{
 		if (g_detailmodules[i].atsInitialize != NULL)
 		{
 			g_detailmodules[i].atsInitialize(param);
 		}
-    }
+	}
 }
 
 // Called every frame
-ATS_HANDLES WINAPI atsElapse(ATS_VEHICLESTATE vs, int *p_panel, int *p_sound)
+ATS_HANDLES WINAPI atsElapse(ATS_VEHICLESTATE vs, int* p_panel, int* p_sound)
 {
-    // MessageBox(NULL, TEXT("atsElapse"), TEXT("メッセージボックス"), MB_OK);
+	// MessageBox(NULL, TEXT("atsElapse"), TEXT("メッセージボックス"), MB_OK);
 
-    ATS_HANDLES ret;
+	ATS_HANDLES ret;
+	
+	g_panel.set_panel(p_panel);
 
-    if (g_num_of_detailmodules> 0)
-    {
-        if (g_first_time)
-        {
-            for (int i = 0; i < g_num_of_detailmodules; ++i)
-            {
+	if (g_num_of_detailmodules > 0)
+	{
+		if (g_first_time)
+		{
+			for (int i = 0; i < g_num_of_detailmodules; ++i)
+			{
 				if (g_detailmodules[i].atsSetPower != NULL)
 				{
 					g_detailmodules[i].atsSetPower(g_handles[0].Power);
@@ -269,84 +278,86 @@ ATS_HANDLES WINAPI atsElapse(ATS_VEHICLESTATE vs, int *p_panel, int *p_sound)
 
 				if (g_detailmodules[i].atsSetReverser != NULL)
 				{
-	                g_detailmodules[i].atsSetReverser(g_handles[0].Reverser);
+					g_detailmodules[i].atsSetReverser(g_handles[0].Reverser);
 				}
-            }
+			}
 
-            g_first_time = false;
-        }
-        else
-        {
-            if (g_handles[0].Power != g_handles[1].Power)
-            {
+			g_first_time = false;
+		}
+		else
+		{
+			if (g_handles[0].Power != g_handles[1].Power)
+			{
 				if (g_detailmodules[0].atsSetPower != NULL)
 				{
 					g_detailmodules[0].atsSetPower(g_handles[0].Power);
 				}
-            }
+			}
 
-            if (g_handles[0].Brake != g_handles[1].Brake)
-            {
+			if (g_handles[0].Brake != g_handles[1].Brake)
+			{
 				if (g_detailmodules[0].atsSetBrake != NULL)
 				{
 					g_detailmodules[0].atsSetBrake(g_handles[0].Brake);
 				}
-            }
+			}
 
-            if (g_handles[0].Reverser != g_handles[1].Reverser)
-            {
+			if (g_handles[0].Reverser != g_handles[1].Reverser)
+			{
 				if (g_detailmodules[0].atsSetReverser != NULL)
 				{
 					g_detailmodules[0].atsSetReverser(g_handles[0].Reverser);
 				}
-            }
-        }
+			}
+		}
 
-        g_handles[1] = g_handles[0];
+		g_handles[1] = g_handles[0];
 
-        if (g_detailmodules[0].atsElapse != NULL)
+		if (g_detailmodules[0].atsElapse != NULL)
 		{
 			ret = g_detailmodules[0].atsElapse(vs, p_panel, p_sound);
 		}
 
-        for (int i = 1; i < g_num_of_detailmodules; ++i)
-        {
-            if (g_detailmodules[i].last_handle.Power != ret.Power)
-            {
+		for (int i = 1; i < g_num_of_detailmodules; ++i)
+		{
+			if (g_detailmodules[i].last_handle.Power != ret.Power)
+			{
 				if (g_detailmodules[i].atsSetPower != NULL)
 				{
 					g_detailmodules[i].atsSetPower(ret.Power);
 				}
-            }
+			}
 
-            if (g_detailmodules[i].last_handle.Brake != ret.Brake)
-            {
+			if (g_detailmodules[i].last_handle.Brake != ret.Brake)
+			{
 				if (g_detailmodules[i].atsSetBrake != NULL)
 				{
 					g_detailmodules[i].atsSetBrake(ret.Brake);
 				}
-            }
+			}
 
-            if (g_detailmodules[i].last_handle.Reverser != ret.Reverser)
-            {
+			if (g_detailmodules[i].last_handle.Reverser != ret.Reverser)
+			{
 				if (g_detailmodules[i].atsSetReverser != NULL)
 				{
 					g_detailmodules[i].atsSetReverser(ret.Reverser);
 				}
-            }
+			}
 
-            g_detailmodules[i].last_handle = ret;
+			g_detailmodules[i].last_handle = ret;
 
 			if (g_detailmodules[i].atsElapse != NULL)
 			{
 				ret = g_detailmodules[i].atsElapse(vs, p_panel, p_sound);
 			}
-        }
-    }
-    else
-    {
-        memset(&ret, 0, sizeof(ATS_HANDLES));
-    }
+		}
+	}
+	else
+	{
+		memset(&ret, 0, sizeof(ATS_HANDLES));
+	}
+
+	g_panel.set_company(Panel::company::jr);
 
 	return ret;
 }
@@ -354,121 +365,121 @@ ATS_HANDLES WINAPI atsElapse(ATS_VEHICLESTATE vs, int *p_panel, int *p_sound)
 // Called when the power is changed
 void WINAPI atsSetPower(int notch)
 {
-  // MessageBox(NULL, TEXT("atsSetPower"), TEXT("メッセージボックス"), MB_OK);
+	// MessageBox(NULL, TEXT("atsSetPower"), TEXT("メッセージボックス"), MB_OK);
 
-    g_handles[0].Power = notch;
+	g_handles[0].Power = notch;
 }
 
 // Called when the brake is changed
 void WINAPI atsSetBrake(int notch)
 {
-  // MessageBox(NULL, TEXT("atsSetBrake"), TEXT("メッセージボックス"), MB_OK);
+	// MessageBox(NULL, TEXT("atsSetBrake"), TEXT("メッセージボックス"), MB_OK);
 
-    g_handles[0].Brake = notch;
+	g_handles[0].Brake = notch;
 }
 
 // Called when the reverser is changed
 void WINAPI atsSetReverser(int pos)
 {
-  // MessageBox(NULL, TEXT("atsSetReverser"), TEXT("メッセージボックス"), MB_OK);
+	// MessageBox(NULL, TEXT("atsSetReverser"), TEXT("メッセージボックス"), MB_OK);
 
-    g_handles[0].Reverser = pos;
+	g_handles[0].Reverser = pos;
 }
 
 // Called when any ATS key is pressed
 void WINAPI atsKeyDown(int ats_key_code)
 {
-  // MessageBox(NULL, TEXT("atsKeyDown"), TEXT("メッセージボックス"), MB_OK);
+	// MessageBox(NULL, TEXT("atsKeyDown"), TEXT("メッセージボックス"), MB_OK);
 
-    for (int i = 0; i < g_num_of_detailmodules; ++i)
-    {
+	for (int i = 0; i < g_num_of_detailmodules; ++i)
+	{
 		if (g_detailmodules[i].atsKeyDown != NULL)
 		{
 			g_detailmodules[i].atsKeyDown(ats_key_code);
 		}
-    }
+	}
 }
 
 // Called when any ATS key is released
 void WINAPI atsKeyUp(int ats_key_code)
 {
-  // MessageBox(NULL, TEXT("atsKeyUp"), TEXT("メッセージボックス"), MB_OK);
+	// MessageBox(NULL, TEXT("atsKeyUp"), TEXT("メッセージボックス"), MB_OK);
 
-    for (int i = 0; i < g_num_of_detailmodules; ++i)
-    {
+	for (int i = 0; i < g_num_of_detailmodules; ++i)
+	{
 		if (g_detailmodules[i].atsKeyUp != NULL)
 		{
 			g_detailmodules[i].atsKeyUp(ats_key_code);
 		}
-    }
+	}
 }
 
 // Called when the horn is used
 void WINAPI atsHornBlow(int ats_horn)
 {
-  // MessageBox(NULL, TEXT("atsHornBlow"), TEXT("メッセージボックス"), MB_OK);
+	// MessageBox(NULL, TEXT("atsHornBlow"), TEXT("メッセージボックス"), MB_OK);
 
-    for (int i = 0; i < g_num_of_detailmodules; ++i)
-    {
+	for (int i = 0; i < g_num_of_detailmodules; ++i)
+	{
 		if (g_detailmodules[i].atsHornBlow != NULL)
 		{
 			g_detailmodules[i].atsHornBlow(ats_horn);
 		}
-    }
+	}
 }
 
 // Called when the door is opened
 void WINAPI atsDoorOpen()
 {
-  // MessageBox(NULL, TEXT("atsDoorOpen"), TEXT("メッセージボックス"), MB_OK);
+	// MessageBox(NULL, TEXT("atsDoorOpen"), TEXT("メッセージボックス"), MB_OK);
 
-    for (int i = 0; i < g_num_of_detailmodules; ++i)
-    {
+	for (int i = 0; i < g_num_of_detailmodules; ++i)
+	{
 		if (g_detailmodules[i].atsDoorOpen != NULL)
 		{
 			g_detailmodules[i].atsDoorOpen();
 		}
-    }
+	}
 }
 
 // Called when the door is closed
 void WINAPI atsDoorClose()
 {
-  // MessageBox(NULL, TEXT("atsDoorClose"), TEXT("メッセージボックス"), MB_OK);
+	// MessageBox(NULL, TEXT("atsDoorClose"), TEXT("メッセージボックス"), MB_OK);
 
-    for (int i = 0; i < g_num_of_detailmodules; ++i)
-    {
+	for (int i = 0; i < g_num_of_detailmodules; ++i)
+	{
 		if (g_detailmodules[i].atsDoorClose != NULL)
 		{
 			g_detailmodules[i].atsDoorClose();
 		}
-    }
+	}
 }
 
 // Called when current signal is changed
 void WINAPI atsSetSignal(int signal)
 {
-  // MessageBox(NULL, TEXT("atsSetSignal"), TEXT("メッセージボックス"), MB_OK);
+	// MessageBox(NULL, TEXT("atsSetSignal"), TEXT("メッセージボックス"), MB_OK);
 
-    for (int i = 0; i < g_num_of_detailmodules; ++i)
-    {
+	for (int i = 0; i < g_num_of_detailmodules; ++i)
+	{
 		if (g_detailmodules[i].atsSetSignal != NULL)
 		{
 			g_detailmodules[i].atsSetSignal(signal);
 		}
-    }
+	}
 }
 
 // Called when the beacon data is received
 void WINAPI atsSetBeaconData(ATS_BEACONDATA beacon_data)
 {
-  // MessageBox(NULL, TEXT("atsSetBeaconData"), TEXT("メッセージボックス"), MB_OK);
+	// MessageBox(NULL, TEXT("atsSetBeaconData"), TEXT("メッセージボックス"), MB_OK);
 
-    for (int i = 0; i < g_num_of_detailmodules; ++i)
-    {
+	for (int i = 0; i < g_num_of_detailmodules; ++i)
+	{
 		if (g_detailmodules[i].atsSetBeaconData != NULL)
 		{
 			g_detailmodules[i].atsSetBeaconData(beacon_data);
 		}
-    }
+	}
 }
