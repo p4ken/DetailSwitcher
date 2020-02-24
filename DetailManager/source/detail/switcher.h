@@ -25,9 +25,16 @@ public:
 
 	// 有効ならtrue
 	bool is_enable(int detail_index);
-	
+
 private:
+	struct waiting
+	{
+		int detail_index;
+		bool enable;
+
+		waiting(const int detail_index, const bool enable) : detail_index(detail_index), enable(enable) {}
+	};
+
 	std::vector<bool> enables_; // dllの有効・無効リスト
-	std::queue<int> waiting_enable_; // 次回立ち上がりで有効になるdll
-	std::queue<int> waiting_disable_; // 次回立ち上がりで無効になるdll
+	std::queue<waiting> waitings_; // 次回立ち上がりで有効・無効になるdll
 };

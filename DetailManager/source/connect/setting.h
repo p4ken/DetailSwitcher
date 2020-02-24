@@ -4,22 +4,22 @@
 #include <vector>
 #include <memory>
 
-
 class setting
 {
 public:
-	// �������g��DLL�̐�΃p�X
+	// 自分自身のdllがあるフォルダの絶対パス
 	void set_module_directory(const wchar_t* module_dir);
 
-	// �I���Ԃ̏o�͂Ɏg���p�l���̓Y��
+	// 会社切替状態を出力するパネルインデックス
 	int get_panel_index_output_company() const;
 
+	// マスコンキーが入力されるパネルインデックス
 	int get_panel_index_input_mascon_key() const;
 
-	// �ؑւ̃g���K�[�ɂȂ�n��q�̎��
+	// トリガーになる地上子のType
 	int get_beacon_type() const;
 
-	// DLL�ւ̃p�X
+	// DLLのパス
 	std::vector<std::string> get_detail_paths() const;
 };
 
