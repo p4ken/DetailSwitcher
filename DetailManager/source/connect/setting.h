@@ -14,10 +14,7 @@ public:
 		return 252;
 	}
 
-	std::vector<std::string> get_detail_paths() const
-	{
-		return { "Rock_On\\ATSN.dll", "unicorn\\ATS_SO.dll", "bvews\\BvetsStatusWindow.dll" };
-	}
+	std::vector<std::string> get_detail_paths() const;
 };
 
 using setting_ptr = std::shared_ptr<setting>;

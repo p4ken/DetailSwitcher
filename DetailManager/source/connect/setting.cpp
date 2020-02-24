@@ -23,3 +23,8 @@ void setting::set_module_directory(const wchar_t* module_dir)
 		return;
 	}
 }
+
+std::vector<std::string> setting::get_detail_paths() const
+{
+	return { "Rock_On\\ATSN.dll", "unicorn\\ATS_SO.dll", "bvews\\BvetsStatusWindow.dll" };
+}
