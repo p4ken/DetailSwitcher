@@ -45,6 +45,7 @@
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
@@ -94,14 +95,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="source\ats_define.hpp" />
+    <ClInclude Include="source\connect\beacon.h" />
     <ClInclude Include="source\connect\logger.h" />
     <ClInclude Include="source\connect\panel.h" />
     <ClInclude Include="source\connect\setting.h" />
+    <ClInclude Include="source\detail\switcher.h" />
     <ClInclude Include="source\dllmain.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="source\connect\beacon.cpp" />
     <ClCompile Include="source\connect\logger.cpp" />
     <ClCompile Include="source\connect\setting.cpp" />
+    <ClCompile Include="source\detail\switcher.cpp" />
     <ClCompile Include="source\dllmain.cpp" />
   </ItemGroup>
   <ItemGroup>

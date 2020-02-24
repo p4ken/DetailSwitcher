@@ -1,5 +1,7 @@
 #include "dllmain.hpp"
 
+#include "detail/switcher.h"
+#include "connect/beacon.h"
 #include "connect/panel.h"
 #include "connect/setting.h"
 
@@ -55,8 +57,11 @@ ATS_HANDLES g_handles[2];
 
 bool g_first_time;
 
+switcher g_switcher;
+
 setting g_setting;
 panel g_panel;
+beacon g_beacon(g_switcher);
 
 #include <stdio.h>
 #include <sys/stat.h>
@@ -114,6 +119,7 @@ void WINAPI atsLoad()
 
 		g_setting.set_module_directory(g_module_dir);
 		g_panel.set_setting(g_setting);
+		g_beacon.set_setting(g_setting);
 	}
 
 	for (const auto& path : g_setting.get_detail_paths())
@@ -447,6 +453,7 @@ void WINAPI atsSetSignal(int signal)
 void WINAPI atsSetBeaconData(ATS_BEACONDATA beacon_data)
 {
 	// MessageBox(NULL, TEXT("atsSetBeaconData"), TEXT("メッセージボックス"), MB_OK);
+	g_beacon.set_beacon(beacon_data.Type, beacon_data.Optional);
 
 	for (int i = 0; i < g_num_of_detailmodules; ++i)
 	{

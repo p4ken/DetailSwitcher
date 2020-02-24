@@ -26,10 +26,10 @@ logger& logger::get_logger()
 
 void logger::write_error(const std::string& text)
 {
-	log_file_ << "error: " << text << '\n';
+	log_file_ << "error: " << text << std::endl;
 }
 
 void logger::write_debug(const std::string& text)
 {
-	log_file_ << "debug: " << text << '\n';
+	log_file_ << "debug: " << text << std::endl;
 }

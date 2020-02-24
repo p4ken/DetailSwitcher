@@ -16,12 +16,22 @@ void setting::set_module_directory(const wchar_t* module_dir)
 	logger::get_logger().write_debug("set module directory.");
 
 	struct _stat buf;
-	bool file_exists = _wstat(full_path.c_str(), &buf) == 0;
+	const bool file_exists = _wstat(full_path.c_str(), &buf) == 0;
 	if (!file_exists)
 	{
 		logger::get_logger().write_error("setting file does not exits.");
 		return;
 	}
+}
+
+int setting::get_state_output_panel_index() const
+{
+	return 252;
+}
+
+int setting::get_beacon_type() const
+{
+	return 26;
 }
 
 std::vector<std::string> setting::get_detail_paths() const
