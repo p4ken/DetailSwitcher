@@ -2,20 +2,22 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
-namespace
-{
-	static const std::string setting_file_path("DetailSelector.ini");
-}
 
-class Setting
+class setting
 {
 public:
-	Setting() {}
-	virtual ~Setting() {}
-
-public:
-	int GetStateOutputPanelIndex() const {
+	void set_module_directory(const wchar_t* module_dir);
+	
+	int get_state_output_panel_index() const {
 		return 252;
 	}
+
+	std::vector<std::string> get_detail_paths() const
+	{
+		return { "Rock_On\\ATSN.dll", "unicorn\\ATS_SO.dll", "bvews\\BvetsStatusWindow.dll" };
+	}
 };
+
+using setting_ptr = std::shared_ptr<setting>;

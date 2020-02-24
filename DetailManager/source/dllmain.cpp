@@ -55,8 +55,8 @@ ATS_HANDLES g_handles[2];
 
 bool g_first_time;
 
-Setting g_setting;
-Panel g_panel(g_setting);
+setting g_setting;
+panel g_panel;
 
 #include <stdio.h>
 #include <sys/stat.h>
@@ -114,6 +114,9 @@ void WINAPI atsLoad()
 		g_num_of_detailmodules = 0;
 		memset(g_detailmodules, 0, sizeof(ST_DETAILMODULE_ATS_DELEGATE_FUNC) * MAX_DETAILMODULE_NUM);
 		memset(g_handles, 0, sizeof(ATS_HANDLES) * 2);
+
+		g_setting.set_module_directory(g_module_dir);
+		g_panel.set_setting(g_setting);
 
 		wcscpy(detailmodules_txt_path, g_module_dir);
 		wcscat(detailmodules_txt_path, L"\\detailmodules.txt");
@@ -357,7 +360,7 @@ ATS_HANDLES WINAPI atsElapse(ATS_VEHICLESTATE vs, int* p_panel, int* p_sound)
 		memset(&ret, 0, sizeof(ATS_HANDLES));
 	}
 
-	g_panel.set_company(Panel::company::jr);
+	g_panel.set_company(panel::company::jr);
 
 	return ret;
 }

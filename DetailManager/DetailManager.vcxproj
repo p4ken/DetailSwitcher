@@ -94,11 +94,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="source\ats_define.hpp" />
+    <ClInclude Include="source\connect\logger.h" />
     <ClInclude Include="source\connect\panel.h" />
     <ClInclude Include="source\connect\setting.h" />
     <ClInclude Include="source\dllmain.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="source\connect\logger.cpp" />
+    <ClCompile Include="source\connect\setting.cpp" />
     <ClCompile Include="source\dllmain.cpp" />
   </ItemGroup>
   <ItemGroup>

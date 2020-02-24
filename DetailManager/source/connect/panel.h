@@ -3,7 +3,7 @@
 
 #include "setting.h"
 
-class Panel {
+class panel {
 public:
 	enum class company
 	{
@@ -12,10 +12,15 @@ public:
 	};
 
 public:
-	explicit Panel(const Setting& setting) : setting_(setting), panels_() {}
-	virtual ~Panel() = default;
+	explicit panel() : panels_(nullptr){}
+	virtual ~panel() = default;
 
 public:
+	void set_setting(const setting& setting)
+	{
+		this->index_output_state_ = setting.get_state_output_panel_index();
+	}
+
 	void set_panel(int* const p_panel)
 	{
 		this->panels_ = p_panel;
@@ -23,11 +28,10 @@ public:
 
 	void set_company(const company company) const
 	{
-		const auto index = this->setting_.GetStateOutputPanelIndex();
-		this->panels_[index] = static_cast<int>(company);
+		this->panels_[this->index_output_state_] = static_cast<int>(company);
 	}
 
 private:
-	const Setting& setting_;
 	int* panels_;
+	int index_output_state_;
 };
