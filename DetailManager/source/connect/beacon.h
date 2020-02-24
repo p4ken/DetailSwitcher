@@ -1,6 +1,6 @@
-#pragma once
-#include "source/connect/setting.h"
-#include "source/detail/switcher.h"
+ï»¿#pragma once
+#include "connect/setting.h"
+#include "detail/switcher.h"
 
 class beacon
 {
@@ -9,15 +9,15 @@ public:
 	
 	enum class command
 	{
-		enable_when_rise = 1, // Ÿ‰ñƒ}ƒXƒRƒ“ƒL[—§‚¿ã‚ª‚è‚Å—LŒø
-		disable_when_rise = 2, // Ÿ‰ñƒ}ƒXƒRƒ“ƒL[—§‚¿ã‚ª‚è‚Å–³Œø
-		enable_immediately = 5, // ‘¦—LŒø
-		disable_immediately = 6, // ‘¦–³Œø
+		enable_when_rise = 1, // æ¬¡å›ãƒã‚¹ã‚³ãƒ³ã‚­ãƒ¼ç«‹ã¡ä¸ŠãŒã‚Šã§æœ‰åŠ¹
+		disable_when_rise = 2, // æ¬¡å›ãƒã‚¹ã‚³ãƒ³ã‚­ãƒ¼ç«‹ã¡ä¸ŠãŒã‚Šã§ç„¡åŠ¹
+		enable_immediately = 5, // å³æ™‚æœ‰åŠ¹
+		disable_immediately = 6, // å³æ™‚ç„¡åŠ¹
 	};
 
 	void set_setting(const setting& setting);
 
-	void set_beacon(int type, int option);
+	void set_beacon(int type, int option) const;
 
 private:
 	switcher& switcher_;

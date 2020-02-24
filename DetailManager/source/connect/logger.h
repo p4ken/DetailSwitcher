@@ -1,19 +1,19 @@
-#pragma once
+ï»¿#pragma once
 #include <fstream>
 
 class logger
 {
 public:
-	// ƒVƒ“ƒOƒ‹ƒgƒ“
+	// ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³
 	static logger& get_logger();
 
-	// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	logger();
 
-	// ƒGƒ‰[o—Í
+	// ã‚¨ãƒ©ãƒ¼å‡ºåŠ›
 	void write_error(const std::string& text);
 
-	// ƒfƒoƒbƒOî•ño—Í
+	// ãƒ‡ãƒãƒƒã‚°æƒ…å ±å‡ºåŠ›
 	void write_debug(const std::string& text);
 
 private:

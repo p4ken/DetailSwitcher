@@ -1,4 +1,4 @@
-#include "dllmain.hpp"
+ï»¿#include "dllmain.hpp"
 
 #include "detail/switcher.h"
 #include "connect/beacon.h"
@@ -60,16 +60,16 @@ bool g_first_time;
 switcher g_switcher;
 
 setting g_setting;
-panel g_panel;
+panel g_panel(g_switcher);
 beacon g_beacon(g_switcher);
 
 #include <stdio.h>
 #include <sys/stat.h>
 
 BOOL WINAPI DllMain(
-	HINSTANCE hinstDLL,  // DLL ƒ‚ƒWƒ…[ƒ‹‚Ìƒnƒ“ƒhƒ‹
-	DWORD fdwReason,     // ŠÖ”‚ğŒÄ‚Ño‚·——R
-	LPVOID lpvReserved   // —\–ñÏ‚İ
+	HINSTANCE hinstDLL,  // DLL ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã®ãƒãƒ³ãƒ‰ãƒ«
+	DWORD fdwReason,     // é–¢æ•°ã‚’å‘¼ã³å‡ºã™ç†ç”±
+	LPVOID lpvReserved   // äºˆç´„æ¸ˆã¿
 )
 {
 	switch (fdwReason)
@@ -106,7 +106,7 @@ BOOL WINAPI DllMain(
 // Called when this plug-in is loaded
 void WINAPI atsLoad()
 {
-	// MessageBox(NULL, TEXT("atsLoad"), TEXT("ƒƒbƒZ[ƒWƒ{ƒbƒNƒX"), MB_OK);
+	// MessageBox(NULL, TEXT("atsLoad"), TEXT("ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹"), MB_OK);
 
 	wchar_t detailmodules_txt_path[MAX_PATH];
 
@@ -178,7 +178,7 @@ void WINAPI atsLoad()
 // Called when this plug-in is unloaded
 void WINAPI atsDispose()
 {
-	// MessageBox(NULL, TEXT("atsDispose"), TEXT("ƒƒbƒZ[ƒWƒ{ƒbƒNƒX"), MB_OK);
+	// MessageBox(NULL, TEXT("atsDispose"), TEXT("ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹"), MB_OK);
 
 	for (int i = 0; i < g_num_of_detailmodules; ++i)
 	{
@@ -197,7 +197,7 @@ void WINAPI atsDispose()
 // Returns the version numbers of ATS plug-in
 int WINAPI atsGetPluginVersion()
 {
-	// MessageBox(NULL, TEXT("atsGetPluginVersion"), TEXT("ƒƒbƒZ[ƒWƒ{ƒbƒNƒX"), MB_OK);
+	// MessageBox(NULL, TEXT("atsGetPluginVersion"), TEXT("ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹"), MB_OK);
 
 	return ATS_VERSION;
 }
@@ -205,7 +205,7 @@ int WINAPI atsGetPluginVersion()
 // Called when the train is loaded
 void WINAPI atsSetVehicleSpec(ATS_VEHICLESPEC vspec)
 {
-	// MessageBox(NULL, TEXT("atsSetVehicleSpec"), TEXT("ƒƒbƒZ[ƒWƒ{ƒbƒNƒX"), MB_OK);
+	// MessageBox(NULL, TEXT("atsSetVehicleSpec"), TEXT("ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹"), MB_OK);
 
 	for (int i = 0; i < g_num_of_detailmodules; ++i)
 	{
@@ -219,7 +219,7 @@ void WINAPI atsSetVehicleSpec(ATS_VEHICLESPEC vspec)
 // Called when the game is started
 void WINAPI atsInitialize(int param)
 {
-	// MessageBox(NULL, TEXT("atsInitialize"), TEXT("ƒƒbƒZ[ƒWƒ{ƒbƒNƒX"), MB_OK);
+	// MessageBox(NULL, TEXT("atsInitialize"), TEXT("ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹"), MB_OK);
 
 	for (int i = 0; i < g_num_of_detailmodules; ++i)
 	{
@@ -233,11 +233,12 @@ void WINAPI atsInitialize(int param)
 // Called every frame
 ATS_HANDLES WINAPI atsElapse(ATS_VEHICLESTATE vs, int* p_panel, int* p_sound)
 {
-	// MessageBox(NULL, TEXT("atsElapse"), TEXT("ƒƒbƒZ[ƒWƒ{ƒbƒNƒX"), MB_OK);
+	// MessageBox(NULL, TEXT("atsElapse"), TEXT("ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹"), MB_OK);
 
 	ATS_HANDLES ret;
 
 	g_panel.set_panel(p_panel);
+	g_panel.read_panel();
 
 	if (g_num_of_detailmodules > 0)
 	{
@@ -295,6 +296,7 @@ ATS_HANDLES WINAPI atsElapse(ATS_VEHICLESTATE vs, int* p_panel, int* p_sound)
 		if (g_detailmodules[0].atsElapse != NULL)
 		{
 			ret = g_detailmodules[0].atsElapse(vs, p_panel, p_sound);
+			g_panel.read_panel();
 		}
 
 		for (int i = 1; i < g_num_of_detailmodules; ++i)
@@ -328,6 +330,7 @@ ATS_HANDLES WINAPI atsElapse(ATS_VEHICLESTATE vs, int* p_panel, int* p_sound)
 			if (g_detailmodules[i].atsElapse != NULL)
 			{
 				ret = g_detailmodules[i].atsElapse(vs, p_panel, p_sound);
+				g_panel.read_panel();
 			}
 		}
 	}
@@ -344,7 +347,7 @@ ATS_HANDLES WINAPI atsElapse(ATS_VEHICLESTATE vs, int* p_panel, int* p_sound)
 // Called when the power is changed
 void WINAPI atsSetPower(int notch)
 {
-	// MessageBox(NULL, TEXT("atsSetPower"), TEXT("ƒƒbƒZ[ƒWƒ{ƒbƒNƒX"), MB_OK);
+	// MessageBox(NULL, TEXT("atsSetPower"), TEXT("ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹"), MB_OK);
 
 	g_handles[0].Power = notch;
 }
@@ -352,7 +355,7 @@ void WINAPI atsSetPower(int notch)
 // Called when the brake is changed
 void WINAPI atsSetBrake(int notch)
 {
-	// MessageBox(NULL, TEXT("atsSetBrake"), TEXT("ƒƒbƒZ[ƒWƒ{ƒbƒNƒX"), MB_OK);
+	// MessageBox(NULL, TEXT("atsSetBrake"), TEXT("ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹"), MB_OK);
 
 	g_handles[0].Brake = notch;
 }
@@ -360,7 +363,7 @@ void WINAPI atsSetBrake(int notch)
 // Called when the reverser is changed
 void WINAPI atsSetReverser(int pos)
 {
-	// MessageBox(NULL, TEXT("atsSetReverser"), TEXT("ƒƒbƒZ[ƒWƒ{ƒbƒNƒX"), MB_OK);
+	// MessageBox(NULL, TEXT("atsSetReverser"), TEXT("ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹"), MB_OK);
 
 	g_handles[0].Reverser = pos;
 }
@@ -368,7 +371,7 @@ void WINAPI atsSetReverser(int pos)
 // Called when any ATS key is pressed
 void WINAPI atsKeyDown(int ats_key_code)
 {
-	// MessageBox(NULL, TEXT("atsKeyDown"), TEXT("ƒƒbƒZ[ƒWƒ{ƒbƒNƒX"), MB_OK);
+	// MessageBox(NULL, TEXT("atsKeyDown"), TEXT("ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹"), MB_OK);
 
 	for (int i = 0; i < g_num_of_detailmodules; ++i)
 	{
@@ -382,7 +385,7 @@ void WINAPI atsKeyDown(int ats_key_code)
 // Called when any ATS key is released
 void WINAPI atsKeyUp(int ats_key_code)
 {
-	// MessageBox(NULL, TEXT("atsKeyUp"), TEXT("ƒƒbƒZ[ƒWƒ{ƒbƒNƒX"), MB_OK);
+	// MessageBox(NULL, TEXT("atsKeyUp"), TEXT("ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹"), MB_OK);
 
 	for (int i = 0; i < g_num_of_detailmodules; ++i)
 	{
@@ -396,7 +399,7 @@ void WINAPI atsKeyUp(int ats_key_code)
 // Called when the horn is used
 void WINAPI atsHornBlow(int ats_horn)
 {
-	// MessageBox(NULL, TEXT("atsHornBlow"), TEXT("ƒƒbƒZ[ƒWƒ{ƒbƒNƒX"), MB_OK);
+	// MessageBox(NULL, TEXT("atsHornBlow"), TEXT("ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹"), MB_OK);
 
 	for (int i = 0; i < g_num_of_detailmodules; ++i)
 	{
@@ -410,7 +413,7 @@ void WINAPI atsHornBlow(int ats_horn)
 // Called when the door is opened
 void WINAPI atsDoorOpen()
 {
-	// MessageBox(NULL, TEXT("atsDoorOpen"), TEXT("ƒƒbƒZ[ƒWƒ{ƒbƒNƒX"), MB_OK);
+	// MessageBox(NULL, TEXT("atsDoorOpen"), TEXT("ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹"), MB_OK);
 
 	for (int i = 0; i < g_num_of_detailmodules; ++i)
 	{
@@ -424,7 +427,7 @@ void WINAPI atsDoorOpen()
 // Called when the door is closed
 void WINAPI atsDoorClose()
 {
-	// MessageBox(NULL, TEXT("atsDoorClose"), TEXT("ƒƒbƒZ[ƒWƒ{ƒbƒNƒX"), MB_OK);
+	// MessageBox(NULL, TEXT("atsDoorClose"), TEXT("ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹"), MB_OK);
 
 	for (int i = 0; i < g_num_of_detailmodules; ++i)
 	{
@@ -438,7 +441,7 @@ void WINAPI atsDoorClose()
 // Called when current signal is changed
 void WINAPI atsSetSignal(int signal)
 {
-	// MessageBox(NULL, TEXT("atsSetSignal"), TEXT("ƒƒbƒZ[ƒWƒ{ƒbƒNƒX"), MB_OK);
+	// MessageBox(NULL, TEXT("atsSetSignal"), TEXT("ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹"), MB_OK);
 
 	for (int i = 0; i < g_num_of_detailmodules; ++i)
 	{
@@ -452,7 +455,7 @@ void WINAPI atsSetSignal(int signal)
 // Called when the beacon data is received
 void WINAPI atsSetBeaconData(ATS_BEACONDATA beacon_data)
 {
-	// MessageBox(NULL, TEXT("atsSetBeaconData"), TEXT("ƒƒbƒZ[ƒWƒ{ƒbƒNƒX"), MB_OK);
+	// MessageBox(NULL, TEXT("atsSetBeaconData"), TEXT("ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹"), MB_OK);
 	g_beacon.set_beacon(beacon_data.Type, beacon_data.Optional);
 
 	for (int i = 0; i < g_num_of_detailmodules; ++i)

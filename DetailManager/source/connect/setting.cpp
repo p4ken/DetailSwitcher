@@ -1,7 +1,7 @@
-#include "setting.h"
+﻿#include "setting.h"
 
 #include <windows.h>
-#include "logger.h"
+#include "connect/logger.h"
 
 namespace
 {
@@ -24,9 +24,14 @@ void setting::set_module_directory(const wchar_t* module_dir)
 	}
 }
 
-int setting::get_state_output_panel_index() const
+int setting::get_panel_index_output_company() const
 {
 	return 252;
+}
+
+int setting::get_panel_index_input_mascon_key() const
+{
+	return 247;
 }
 
 int setting::get_beacon_type() const

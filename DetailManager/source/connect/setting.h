@@ -8,16 +8,18 @@
 class setting
 {
 public:
-	// ©•ª©g‚ÌDLL‚Ìâ‘ÎƒpƒX
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½gï¿½ï¿½DLLï¿½Ìï¿½Îƒpï¿½X
 	void set_module_directory(const wchar_t* module_dir);
 
-	// ‘I‘ğó‘Ô‚Ìo—Í‚Ég‚¤ƒpƒlƒ‹‚Ì“Yš
-	int get_state_output_panel_index() const;
+	// ï¿½Iï¿½ï¿½ï¿½Ô‚Ìoï¿½Í‚Égï¿½ï¿½ï¿½pï¿½lï¿½ï¿½ï¿½Ì“Yï¿½ï¿½
+	int get_panel_index_output_company() const;
 
-	// Ø‘Ö‚ÌƒgƒŠƒK[‚É‚È‚é’nãq‚Ìí—Ş
+	int get_panel_index_input_mascon_key() const;
+
+	// ï¿½Ø‘Ö‚Ìƒgï¿½ï¿½ï¿½Kï¿½[ï¿½É‚È‚ï¿½nï¿½ï¿½qï¿½Ìï¿½ï¿½
 	int get_beacon_type() const;
 
-	// DLL‚Ö‚ÌƒpƒX
+	// DLLï¿½Ö‚Ìƒpï¿½X
 	std::vector<std::string> get_detail_paths() const;
 };
 

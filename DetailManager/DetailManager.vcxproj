@@ -45,7 +45,7 @@
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir);$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)source;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
@@ -62,6 +62,7 @@
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <AdditionalOptions>/source-charset:utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
@@ -105,6 +106,7 @@
   <ItemGroup>
     <ClCompile Include="source\connect\beacon.cpp" />
     <ClCompile Include="source\connect\logger.cpp" />
+    <ClCompile Include="source\connect\panel.cpp" />
     <ClCompile Include="source\connect\setting.cpp" />
     <ClCompile Include="source\detail\switcher.cpp" />
     <ClCompile Include="source\dllmain.cpp" />

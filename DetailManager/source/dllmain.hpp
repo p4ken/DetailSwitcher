@@ -1,4 +1,4 @@
-#ifndef DLL_MAIN_HPP_INCLUDED
+﻿#ifndef DLL_MAIN_HPP_INCLUDED
 #define DLL_MAIN_HPP_INCLUDED
 
 #include <windows.h>

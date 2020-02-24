@@ -1,4 +1,4 @@
-#include "logger.h"
+﻿#include "logger.h"
 
 #include <string>
 #include <windows.h>
@@ -15,7 +15,7 @@ logger::logger() : log_file_(file_name)
 	mbstowcs(wtext, text, strlen(text) + 1);
 	// MessageBox(NULL, wtext, TEXT("debug"), MB_OK);
 
-	this->write_debug("logger init.");
+	this->write_debug("logger init. 日本語");
 }
 
 logger& logger::get_logger()

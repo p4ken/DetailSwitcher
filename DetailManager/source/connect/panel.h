@@ -1,7 +1,8 @@
-#pragma once
+﻿#pragma once
 #include <vector>
 
-#include "setting.h"
+#include "connect/setting.h"
+#include "detail/switcher.h"
 
 class panel {
 public:
@@ -11,27 +12,25 @@ public:
 		jr = 2,
 	};
 
-public:
-	explicit panel() : panels_(nullptr){}
-	virtual ~panel() = default;
+	//　コンストラクタ
+	explicit panel(switcher& switcher);
 
-public:
-	void set_setting(const setting& setting)
-	{
-		this->index_output_state_ = setting.get_state_output_panel_index();
-	}
+	// 設定
+	void set_setting(const setting& setting);
 
-	void set_panel(int* const p_panel)
-	{
-		this->panels_ = p_panel;
-	}
+	// パネルのポインタ
+	void set_panel(int* const p_panel);
 
-	void set_company(const company company) const
-	{
-		this->panels_[this->index_output_state_] = static_cast<int>(company);
-	}
+	// パネル読み取り
+	void read_panel();
+
+	// 会社切替状態
+	void set_company(const company company) const;
 
 private:
+	switcher& switcher_;
 	int* panels_;
+	int index_input_mascon_key_;
+	int last_input_mascon_key_;
 	int index_output_state_;
 };
