@@ -22,6 +22,7 @@ void switcher::enable_when_rise(const int detail_index)
 	const waiting request(detail_index, true);
 	this->waitings_.push(request);
 	logger::get_logger().write_debug("enable_when_rise(" + std::to_string(detail_index) + ") : pushed.");
+	this->should_fall_ = true;
 }
 
 void switcher::disable_when_rise(const int detail_index)
@@ -29,6 +30,7 @@ void switcher::disable_when_rise(const int detail_index)
 	const waiting request(detail_index, false);
 	this->waitings_.push(request);
 	logger::get_logger().write_debug("disable_when_rise(" + std::to_string(detail_index) + ") : pushed.");
+	this->should_fall_ = true;
 }
 
 void switcher::rise()
@@ -45,7 +47,28 @@ void switcher::rise()
 	}
 }
 
-bool switcher::is_enable(int detail_index)
+void switcher::fall()
+{
+	// logger::get_logger().write_debug("fall!");
+	
+}
+
+
+bool switcher::should_fall()
+{
+	return false;
+	
+	if(this->should_fall_)
+	{
+		this->should_fall_ = false;
+		return true;
+	}
+
+	return false;
+}
+
+
+bool switcher::is_enable(const int detail_index)
 {
 	return this->enables_.at(detail_index);
 }

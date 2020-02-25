@@ -30,6 +30,9 @@ void beacon::set_beacon(int type, int option) const
 		case command::disable_when_rise:
 			this->switcher_.disable_when_rise(detail_index);
 			break;
+		case command::trial:
+			this->switcher_.fall();
+			break;
 		default:
 			break;
 		}

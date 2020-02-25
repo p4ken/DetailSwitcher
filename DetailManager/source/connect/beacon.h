@@ -13,6 +13,7 @@ public:
 		disable_when_rise = 2, // 次回マスコンキー立ち上がりで無効
 		enable_immediately = 5, // 即時有効
 		disable_immediately = 6, // 即時無効
+		trial = 9, // 開発用
 	};
 
 	void set_setting(const setting& setting);

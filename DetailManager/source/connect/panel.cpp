@@ -1,4 +1,4 @@
-#include "panel.h"
+﻿#include "panel.h"
 
 #include "connect/logger.h"
 
@@ -32,6 +32,12 @@ void panel::read_panel()
 	this->last_input_mascon_key_ = now_input_mascon_key;
 }
 
+void panel::output_masconkey_fall() const
+{
+	logger::get_logger().write_debug("output_masconkey_fall()");
+	this->panels_[249] = 1;
+	this->panels_[this->index_input_mascon_key_] = 0;
+}
 
 void panel::output_company() const
 {

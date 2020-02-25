@@ -1,4 +1,4 @@
-#include "dllmain.hpp"
+﻿#include "dllmain.hpp"
 
 #include "detail/switcher.h"
 #include "connect/beacon.h"
@@ -355,7 +355,12 @@ ATS_HANDLES WINAPI atsElapse(ATS_VEHICLESTATE vs, int* p_panel, int* p_sound)
 		memset(&ret, 0, sizeof(ATS_HANDLES));
 	}
 
-	g_panel.set_company(panel::company::jr);
+	if(g_switcher.should_fall())
+	{
+		g_panel.output_masconkey_fall();
+		g_panel.read_panel();
+	}
+
 	g_panel.output_company();
 
 	return ret;

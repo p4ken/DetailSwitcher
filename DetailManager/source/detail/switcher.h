@@ -23,6 +23,12 @@ public:
 	// 立ち上がり
 	void rise();
 
+	// 立ち下がり
+	void fall();
+
+	// 立ち下がりを発生させるべきか
+	bool should_fall();
+
 	// 有効ならtrue
 	bool is_enable(int detail_index);
 
@@ -37,4 +43,5 @@ private:
 
 	std::vector<bool> enables_; // dllの有効・無効リスト
 	std::queue<waiting> waitings_; // 次回立ち上がりで有効・無効になるdll
+	bool should_fall_; // 立ち下りを発生させるべきか
 };

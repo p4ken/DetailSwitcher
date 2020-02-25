@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <vector>
 
 #include "connect/setting.h"
@@ -26,8 +26,8 @@ public:
 	// パネル読み取り
 	void read_panel();
 
-	// 会社切替状態
-	void set_company(const company company) const;
+	// マスコンキー立ち下がりを発生させる
+	void output_masconkey_fall() const;
 
 	// 会社切替状態を出力
 	void output_company() const;
