@@ -14,6 +14,7 @@
     <ProjectGuid>{D8C17B6C-5AFA-482D-86FD-D988D52E7584}</ProjectGuid>
     <RootNamespace>DetailManager</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <ProjectName>DetailSwitcher</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -94,9 +95,11 @@
   <ItemGroup>
     <ClInclude Include="source\ats_define.hpp" />
     <ClInclude Include="source\dllmain.hpp" />
+    <ClInclude Include="source\trigger.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\dllmain.cpp" />
+    <ClCompile Include="source\trigger.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="exports.def" />

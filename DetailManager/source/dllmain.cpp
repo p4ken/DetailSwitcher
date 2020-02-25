@@ -54,6 +54,10 @@ bool g_first_time;
 #include <sys/stat.h>
 #include <stdio.h>
 
+#include "trigger.h"
+
+trigger g_trigger;
+
 BOOL WINAPI DllMain(
 	HINSTANCE hinstDLL,  // DLL モジュールのハンドル
 	DWORD fdwReason,     // 関数を呼び出す理由
@@ -299,6 +303,11 @@ ATS_HANDLES WINAPI atsElapse(ATS_VEHICLESTATE vs, int* p_panel, int* p_sound)
 
 		for (int i = 1; i < g_num_of_detailmodules; ++i)
 		{
+			if (!g_trigger.is_enable(i))
+			{
+				continue;
+			}
+
 			if (g_detailmodules[i].last_handle.Power != ret.Power)
 			{
 				if (g_detailmodules[i].atsSetPower != NULL)
@@ -362,6 +371,11 @@ void WINAPI atsKeyDown(int ats_key_code)
 {
 	for (int i = 0; i < g_num_of_detailmodules; ++i)
 	{
+		if (!g_trigger.is_enable(i))
+		{
+			continue;
+		}
+
 		if (g_detailmodules[i].atsKeyDown != NULL)
 		{
 			g_detailmodules[i].atsKeyDown(ats_key_code);
@@ -374,6 +388,11 @@ void WINAPI atsKeyUp(int ats_key_code)
 {
 	for (int i = 0; i < g_num_of_detailmodules; ++i)
 	{
+		if (!g_trigger.is_enable(i))
+		{
+			continue;
+		}
+
 		if (g_detailmodules[i].atsKeyUp != NULL)
 		{
 			g_detailmodules[i].atsKeyUp(ats_key_code);
@@ -386,6 +405,11 @@ void WINAPI atsHornBlow(int ats_horn)
 {
 	for (int i = 0; i < g_num_of_detailmodules; ++i)
 	{
+		if (!g_trigger.is_enable(i))
+		{
+			continue;
+		}
+
 		if (g_detailmodules[i].atsHornBlow != NULL)
 		{
 			g_detailmodules[i].atsHornBlow(ats_horn);
@@ -398,6 +422,11 @@ void WINAPI atsDoorOpen()
 {
 	for (int i = 0; i < g_num_of_detailmodules; ++i)
 	{
+		if (!g_trigger.is_enable(i))
+		{
+			continue;
+		}
+
 		if (g_detailmodules[i].atsDoorOpen != NULL)
 		{
 			g_detailmodules[i].atsDoorOpen();
@@ -410,6 +439,11 @@ void WINAPI atsDoorClose()
 {
 	for (int i = 0; i < g_num_of_detailmodules; ++i)
 	{
+		if (!g_trigger.is_enable(i))
+		{
+			continue;
+		}
+
 		if (g_detailmodules[i].atsDoorClose != NULL)
 		{
 			g_detailmodules[i].atsDoorClose();
@@ -422,6 +456,11 @@ void WINAPI atsSetSignal(int signal)
 {
 	for (int i = 0; i < g_num_of_detailmodules; ++i)
 	{
+		if (!g_trigger.is_enable(i))
+		{
+			continue;
+		}
+
 		if (g_detailmodules[i].atsSetSignal != NULL)
 		{
 			g_detailmodules[i].atsSetSignal(signal);
@@ -434,6 +473,11 @@ void WINAPI atsSetBeaconData(ATS_BEACONDATA beacon_data)
 {
 	for (int i = 0; i < g_num_of_detailmodules; ++i)
 	{
+		if (!g_trigger.is_enable(i))
+		{
+			continue;
+		}
+
 		if (g_detailmodules[i].atsSetBeaconData != NULL)
 		{
 			g_detailmodules[i].atsSetBeaconData(beacon_data);
