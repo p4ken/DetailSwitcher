@@ -94,6 +94,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="source\ats_define.hpp" />
+    <ClInclude Include="source\debug.h" />
     <ClInclude Include="source\dllmain.hpp" />
     <ClInclude Include="source\trigger.h" />
   </ItemGroup>

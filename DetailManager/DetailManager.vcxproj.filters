@@ -24,6 +24,9 @@
     <ClInclude Include="source\trigger.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="source\debug.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\dllmain.cpp">
