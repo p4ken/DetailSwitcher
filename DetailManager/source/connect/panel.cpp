@@ -1,10 +1,15 @@
-﻿#include "panel.h"
+#include "panel.h"
+
+#include "connect/logger.h"
 
 panel::panel(switcher& switcher) :
 	switcher_(switcher),
 	panels_(nullptr),
 	index_input_mascon_key_(-1),
-	index_output_state_(-1) {}
+	index_output_state_(-1),
+	last_input_mascon_key_(0)
+{
+}
 
 void panel::set_setting(const setting& setting)
 {
@@ -28,7 +33,25 @@ void panel::read_panel()
 }
 
 
-void panel::set_company(const company company) const
+void panel::output_company() const
 {
+	// logger::get_logger().write_debug("output_company()");
+
+	auto company = company::none;
+	if (this->switcher_.is_enable(1))
+	{
+		company = company::sotetsu;
+		if (this->switcher_.is_enable(2))
+		{
+			company = company::both;
+		}
+	}
+	else if (this->switcher_.is_enable(2))
+	{
+		company = company::jr;
+	}
+	// logger::get_logger().write_debug(std::to_string(static_cast<int>(company)));
+	// logger::get_logger().write_debug(std::to_string(this->index_output_state_));
+
 	this->panels_[this->index_output_state_] = static_cast<int>(company);
 }

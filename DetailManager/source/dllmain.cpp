@@ -1,4 +1,4 @@
-﻿#include "dllmain.hpp"
+#include "dllmain.hpp"
 
 #include "detail/switcher.h"
 #include "connect/beacon.h"
@@ -129,7 +129,7 @@ void WINAPI atsLoad()
 			module_path_wcs[MAX_PATH];
 
 		memset(module_path, 0, sizeof(char) * MAX_PATH);
-				
+
 		wcscpy(module_full_path, g_module_dir);
 		mbstowcs(module_path_wcs, path.c_str(), MAX_PATH);
 		//            wcscat(module_full_path, L"..\\..\\Plugin\\");
@@ -246,6 +246,11 @@ ATS_HANDLES WINAPI atsElapse(ATS_VEHICLESTATE vs, int* p_panel, int* p_sound)
 		{
 			for (int i = 0; i < g_num_of_detailmodules; ++i)
 			{
+				if (!g_switcher.is_enable(i))
+				{
+					continue;
+				}
+
 				if (g_detailmodules[i].atsSetPower != NULL)
 				{
 					g_detailmodules[i].atsSetPower(g_handles[0].Power);
@@ -266,41 +271,52 @@ ATS_HANDLES WINAPI atsElapse(ATS_VEHICLESTATE vs, int* p_panel, int* p_sound)
 		}
 		else
 		{
-			if (g_handles[0].Power != g_handles[1].Power)
+			if (g_switcher.is_enable(0))
 			{
-				if (g_detailmodules[0].atsSetPower != NULL)
+				if (g_handles[0].Power != g_handles[1].Power)
 				{
-					g_detailmodules[0].atsSetPower(g_handles[0].Power);
+					if (g_detailmodules[0].atsSetPower != NULL)
+					{
+						g_detailmodules[0].atsSetPower(g_handles[0].Power);
+					}
 				}
-			}
 
-			if (g_handles[0].Brake != g_handles[1].Brake)
-			{
-				if (g_detailmodules[0].atsSetBrake != NULL)
+				if (g_handles[0].Brake != g_handles[1].Brake)
 				{
-					g_detailmodules[0].atsSetBrake(g_handles[0].Brake);
+					if (g_detailmodules[0].atsSetBrake != NULL)
+					{
+						g_detailmodules[0].atsSetBrake(g_handles[0].Brake);
+					}
 				}
-			}
 
-			if (g_handles[0].Reverser != g_handles[1].Reverser)
-			{
-				if (g_detailmodules[0].atsSetReverser != NULL)
+				if (g_handles[0].Reverser != g_handles[1].Reverser)
 				{
-					g_detailmodules[0].atsSetReverser(g_handles[0].Reverser);
+					if (g_detailmodules[0].atsSetReverser != NULL)
+					{
+						g_detailmodules[0].atsSetReverser(g_handles[0].Reverser);
+					}
 				}
 			}
 		}
 
 		g_handles[1] = g_handles[0];
 
-		if (g_detailmodules[0].atsElapse != NULL)
+		if (g_switcher.is_enable(0))
 		{
-			ret = g_detailmodules[0].atsElapse(vs, p_panel, p_sound);
-			g_panel.read_panel();
+			if (g_detailmodules[0].atsElapse != NULL)
+			{
+				ret = g_detailmodules[0].atsElapse(vs, p_panel, p_sound);
+				g_panel.read_panel();
+			}
 		}
 
 		for (int i = 1; i < g_num_of_detailmodules; ++i)
 		{
+			if (!g_switcher.is_enable(i))
+			{
+				continue;
+			}
+
 			if (g_detailmodules[i].last_handle.Power != ret.Power)
 			{
 				if (g_detailmodules[i].atsSetPower != NULL)
@@ -340,6 +356,7 @@ ATS_HANDLES WINAPI atsElapse(ATS_VEHICLESTATE vs, int* p_panel, int* p_sound)
 	}
 
 	g_panel.set_company(panel::company::jr);
+	g_panel.output_company();
 
 	return ret;
 }
@@ -349,6 +366,11 @@ void WINAPI atsSetPower(int notch)
 {
 	// MessageBox(NULL, TEXT("atsSetPower"), TEXT("メッセージボックス"), MB_OK);
 
+	if (!g_switcher.is_enable(0))
+	{
+		return;
+	}
+	
 	g_handles[0].Power = notch;
 }
 
@@ -357,6 +379,11 @@ void WINAPI atsSetBrake(int notch)
 {
 	// MessageBox(NULL, TEXT("atsSetBrake"), TEXT("メッセージボックス"), MB_OK);
 
+	if (!g_switcher.is_enable(0))
+	{
+		return;
+	}
+
 	g_handles[0].Brake = notch;
 }
 
@@ -364,6 +391,11 @@ void WINAPI atsSetBrake(int notch)
 void WINAPI atsSetReverser(int pos)
 {
 	// MessageBox(NULL, TEXT("atsSetReverser"), TEXT("メッセージボックス"), MB_OK);
+
+	if (!g_switcher.is_enable(0))
+	{
+		return;
+	}
 
 	g_handles[0].Reverser = pos;
 }
@@ -375,6 +407,11 @@ void WINAPI atsKeyDown(int ats_key_code)
 
 	for (int i = 0; i < g_num_of_detailmodules; ++i)
 	{
+		if (!g_switcher.is_enable(i))
+		{
+			continue;
+		}
+		
 		if (g_detailmodules[i].atsKeyDown != NULL)
 		{
 			g_detailmodules[i].atsKeyDown(ats_key_code);
@@ -389,6 +426,11 @@ void WINAPI atsKeyUp(int ats_key_code)
 
 	for (int i = 0; i < g_num_of_detailmodules; ++i)
 	{
+		if (!g_switcher.is_enable(i))
+		{
+			continue;
+		}
+		
 		if (g_detailmodules[i].atsKeyUp != NULL)
 		{
 			g_detailmodules[i].atsKeyUp(ats_key_code);
@@ -403,6 +445,11 @@ void WINAPI atsHornBlow(int ats_horn)
 
 	for (int i = 0; i < g_num_of_detailmodules; ++i)
 	{
+		if (!g_switcher.is_enable(i))
+		{
+			continue;
+		}
+		
 		if (g_detailmodules[i].atsHornBlow != NULL)
 		{
 			g_detailmodules[i].atsHornBlow(ats_horn);
@@ -417,6 +464,11 @@ void WINAPI atsDoorOpen()
 
 	for (int i = 0; i < g_num_of_detailmodules; ++i)
 	{
+		if (!g_switcher.is_enable(i))
+		{
+			continue;
+		}
+		
 		if (g_detailmodules[i].atsDoorOpen != NULL)
 		{
 			g_detailmodules[i].atsDoorOpen();
@@ -431,6 +483,11 @@ void WINAPI atsDoorClose()
 
 	for (int i = 0; i < g_num_of_detailmodules; ++i)
 	{
+		if (!g_switcher.is_enable(i))
+		{
+			continue;
+		}
+		
 		if (g_detailmodules[i].atsDoorClose != NULL)
 		{
 			g_detailmodules[i].atsDoorClose();
@@ -445,6 +502,11 @@ void WINAPI atsSetSignal(int signal)
 
 	for (int i = 0; i < g_num_of_detailmodules; ++i)
 	{
+		if (!g_switcher.is_enable(i))
+		{
+			continue;
+		}
+		
 		if (g_detailmodules[i].atsSetSignal != NULL)
 		{
 			g_detailmodules[i].atsSetSignal(signal);
@@ -460,6 +522,11 @@ void WINAPI atsSetBeaconData(ATS_BEACONDATA beacon_data)
 
 	for (int i = 0; i < g_num_of_detailmodules; ++i)
 	{
+		if (!g_switcher.is_enable(i))
+		{
+			continue;
+		}
+		
 		if (g_detailmodules[i].atsSetBeaconData != NULL)
 		{
 			g_detailmodules[i].atsSetBeaconData(beacon_data);

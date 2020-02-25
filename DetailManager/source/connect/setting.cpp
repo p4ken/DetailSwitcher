@@ -26,7 +26,7 @@ void setting::set_module_directory(const wchar_t* module_dir)
 
 int setting::get_panel_index_output_company() const
 {
-	return 252;
+	return 248;
 }
 
 int setting::get_panel_index_input_mascon_key() const
@@ -41,5 +41,5 @@ int setting::get_beacon_type() const
 
 std::vector<std::string> setting::get_detail_paths() const
 {
-	return { "Rock_On\\ATSN.dll", "unicorn\\ATS_SO.dll", "bvews\\BvetsStatusWindow.dll" };
+	return { "ct\\MasconKey.dll", "unicorn\\ATS_SO.dll", "ct\\ATSP.dll", "bvews\\BvetsStatusWindow.dll" };
 }
