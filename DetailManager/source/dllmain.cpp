@@ -236,12 +236,17 @@ void WINAPI atsInitialize(int param)
 			g_detailmodules[i].atsInitialize(param);
 		}
 	}
+
+	g_trigger.reset();
 }
 
 // Called every frame
 ATS_HANDLES WINAPI atsElapse(ATS_VEHICLESTATE vs, int* p_panel, int* p_sound)
 {
 	ATS_HANDLES ret;
+
+	g_trigger.set_distance(vs.Location);
+	g_trigger.set_time(vs.Time);
 
 	if (g_num_of_detailmodules > 0)
 	{
@@ -422,6 +427,8 @@ void WINAPI atsHornBlow(int ats_horn)
 // Called when the door is opened
 void WINAPI atsDoorOpen()
 {
+	g_trigger.set_door_open();
+
 	for (int i = 0; i < g_num_of_detailmodules; ++i)
 	{
 		if (!g_trigger.is_enable(i))
@@ -439,6 +446,8 @@ void WINAPI atsDoorOpen()
 // Called when the door is closed
 void WINAPI atsDoorClose()
 {
+	g_trigger.set_door_close();
+
 	for (int i = 0; i < g_num_of_detailmodules; ++i)
 	{
 		if (!g_trigger.is_enable(i))
