@@ -7,7 +7,7 @@ namespace config
 	namespace trigger
 	{
 		static const double distance = 2100; // [m]
-		static const int wait_time = 20 * 1000; // [ms]
+		static const int wait_time = 35 * 1000; // [ms]
 	}
 
 	namespace panel
