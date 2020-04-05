@@ -1,20 +1,29 @@
 ﻿#include "trigger.h"
 
+#include "ats_define.hpp"
 #include "debug.h"
 
 namespace config
 {
 	namespace trigger
 	{
-		static const double distance = 2100; // [m]
-		static const int wait_time = 35 * 1000; // [ms]
+		const double distance = 2100; // [m]
+		const int wait_time = 35 * 1000; // [ms]
 	}
 
 	namespace panel
 	{
 		namespace index
 		{
-			static const int output_company = 248;
+			const int output_company = 248;
+		};
+	};
+
+	namespace sound
+	{
+		namespace index
+		{
+			const int announce_here = 21;
 		};
 	};
 
@@ -22,15 +31,15 @@ namespace config
 	{
 		namespace index
 		{
-			static const int sotetsu[] = { 2 };
-			static const int jr[] = { 1 };
+			const int sotetsu[] = { 2 };
+			const int jr[] = { 1 };
 		};
 	};
 
 	namespace company
 	{
-		static const int sotetsu = 1;
-		static const int jr = 2;
+		const int sotetsu = 1;
+		const int jr = 2;
 	}
 }
 
@@ -39,7 +48,9 @@ trigger::trigger() :
 	distance_(0),
 	door_opened_(false),
 	countdown_(0),
-	last_time_(0)
+	last_time_(0),
+	announce_here_(false),
+	announce_reset_(false)
 {}
 
 void trigger::reset()
@@ -49,6 +60,8 @@ void trigger::reset()
 	this->door_opened_ = false;
 	this->countdown_ = 0;
 	this->last_time_ = 0;
+	this->announce_here_ = false;
+	this->announce_reset_ = true;
 }
 
 void trigger::set_time(int ms)
@@ -77,6 +90,7 @@ void trigger::set_time(int ms)
 		// switching
 		this->company_ = config::company::jr;
 		this->door_opened_ = false;
+		this->announce_here_ = true;
 	}
 }
 
@@ -131,7 +145,7 @@ bool trigger::is_enable(const int detail_index) const
 	return true;
 }
 
-void trigger::output_company(int* p_panel)
+void trigger::output_company(int* p_panel) const
 {
 	// none
 	int result = 0;
@@ -146,4 +160,21 @@ void trigger::output_company(int* p_panel)
 		result += 2;
 	}
 	p_panel[config::panel::index::output_company] = result;
+}
+
+void trigger::announce_here(int* p_sound)
+{
+	if (this->announce_reset_)
+	{
+		p_sound[config::sound::index::announce_here] = ATS_SOUND_STOP;
+		this->announce_reset_ = false;
+		return;
+	}
+	if (this->announce_here_)
+	{
+		p_sound[config::sound::index::announce_here] = ATS_SOUND_PLAY;
+		this->announce_here_ = false;
+		return;
+	}
+	p_sound[config::sound::index::announce_here] = ATS_SOUND_CONTINUE;
 }

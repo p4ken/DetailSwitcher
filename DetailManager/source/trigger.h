@@ -14,7 +14,8 @@ public:
 
 	// then that...
 	bool is_enable(const int detail_index) const;
-	void output_company(int* p_panel);
+	void output_company(int* p_panel) const;
+	void announce_here(int* p_sound);
 
 private:
 	int company_;
@@ -22,4 +23,6 @@ private:
 	bool door_opened_;
 	int countdown_; // [ms]
 	int last_time_; // [ms]
+	bool announce_here_;
+	bool announce_reset_;
 };

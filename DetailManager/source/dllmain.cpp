@@ -351,6 +351,7 @@ ATS_HANDLES WINAPI atsElapse(ATS_VEHICLESTATE vs, int* p_panel, int* p_sound)
 	}
 
 	g_trigger.output_company(p_panel);
+	g_trigger.announce_here(p_sound);
 
 	return ret;
 }
