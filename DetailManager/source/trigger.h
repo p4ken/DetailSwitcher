@@ -13,7 +13,7 @@ public:
 	void set_door_close();
 
 	// then that...
-	bool is_enable(const int detail_index) const;
+	bool is_enable(int detail_index) const;
 	void output_company(int* p_panel) const;
 	void announce_here(int* p_sound);
 

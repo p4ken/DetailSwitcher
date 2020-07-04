@@ -1,4 +1,4 @@
-﻿#include "trigger.h"
+#include "trigger.h"
 
 #include "ats_define.hpp"
 #include "debug.h"
@@ -15,7 +15,7 @@ namespace config
 	{
 		namespace index
 		{
-			const int output_company = 248;
+			const int output_company = 246;
 		};
 	};
 
@@ -31,8 +31,8 @@ namespace config
 	{
 		namespace index
 		{
-			const int sotetsu[] = { 2 };
-			const int jr[] = { 1 };
+			const int sotetsu[] = { 2, 5 };
+			const int jr[] = { 3 };
 		};
 	};
 
@@ -64,7 +64,7 @@ void trigger::reset()
 	this->announce_reset_ = true;
 }
 
-void trigger::set_time(int ms)
+void trigger::set_time(const int ms)
 {
 	const auto dt = ms - this->last_time_;
 	this->last_time_ = ms;
@@ -94,7 +94,7 @@ void trigger::set_time(int ms)
 	}
 }
 
-void trigger::set_distance(double distance)
+void trigger::set_distance(const double distance)
 {
 	if (this->distance_ == 0)
 	{
