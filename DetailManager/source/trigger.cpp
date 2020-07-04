@@ -1,4 +1,4 @@
-#include "trigger.h"
+﻿#include "trigger.h"
 
 #include "ats_define.hpp"
 #include "debug.h"
@@ -85,7 +85,7 @@ void trigger::set_time(const int ms)
 	}
 
 	this->countdown_ -= dt;
-	if (this->countdown_ < 0)
+	if (this->countdown_ < 0 && this->company_ != config::company::jr)
 	{
 		// switching
 		this->company_ = config::company::jr;
