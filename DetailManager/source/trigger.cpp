@@ -32,7 +32,7 @@ namespace config
 		namespace index
 		{
 			const int sotetsu[] = { 2, 5 };
-			const int jr[] = { 3 };
+			const int jr[] = { 3, 7 };
 		};
 	};
 
