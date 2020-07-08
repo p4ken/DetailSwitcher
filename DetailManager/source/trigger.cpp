@@ -11,6 +11,10 @@ namespace config
 		const int wait_time = 35 * 1000; // [ms]
 	}
 
+	namespace beacon
+	{
+		const int index = 
+	}
 	namespace panel
 	{
 		namespace index
@@ -62,6 +66,13 @@ void trigger::reset()
 	this->last_time_ = 0;
 	this->announce_here_ = false;
 	this->announce_reset_ = true;
+}
+
+void trigger::set_beacon(const ATS_BEACONDATA& beacon_data)
+{
+	if (beacon_data.Type != config::beacon::index) {
+		return;
+	}
 }
 
 void trigger::set_time(const int ms)

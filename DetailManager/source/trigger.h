@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "ats_define.hpp"
 
 class trigger
 {
@@ -7,6 +8,7 @@ public:
 	void reset();
 
 	// if this...
+	void set_beacon(const ATS_BEACONDATA& beacon_data);
 	void set_time(int ms);
 	void set_distance(double distance);
 	void set_door_open();

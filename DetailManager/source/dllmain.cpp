@@ -495,4 +495,6 @@ void WINAPI atsSetBeaconData(ATS_BEACONDATA beacon_data)
 			g_detailmodules[i].atsSetBeaconData(beacon_data);
 		}
 	}
+
+	g_trigger.set_beacon(beacon_data);
 }
