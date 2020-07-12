@@ -158,8 +158,7 @@ void WINAPI atsLoad()
 				if (!exists)
 				{
 					const auto title = TEXT("DetailSelector");
-					wchar_t body[512] = L"下記のATSプラグインが不足しています。\n"
-															"Failed to open the following path.\n\n";
+					wchar_t body[512] = L"下記のATSプラグインが不足しています。\n\n";
 					wcscat_s(body, module_path_wcs);
 					MessageBox(NULL, body, title, MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
 					char* p = 0; *p = 1;
@@ -256,7 +255,6 @@ void WINAPI atsInitialize(int param)
 // Called every frame
 ATS_HANDLES WINAPI atsElapse(ATS_VEHICLESTATE vs, int* p_panel, int* p_sound)
 {
-	MessageBox(NULL, L"a", L"a", MB_OK | MB_ICONERROR);
 	ATS_HANDLES ret;
 
 	g_trigger.set_distance(vs.Location);
