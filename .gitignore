@@ -1,3 +1,5 @@
-.vs/ 
-Debug/ 
-*/DetailManager.vcxproj.user 
+.vs/
+Debug/
+release/
+x64/
+*/DetailManager.vcxproj.user
