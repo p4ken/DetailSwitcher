@@ -130,6 +130,11 @@ void WINAPI atsLoad()
 
 			fgets(module_path, MAX_PATH, fp);
 
+			if (module_path[0] =='#')
+			{
+				continue;
+			}
+
 			{
 				char* p = strchr(module_path, 10);
 
@@ -148,38 +153,46 @@ void WINAPI atsLoad()
 				struct _stat buf;
 				int exists;
 
-				exists = _wstat(module_full_path, &buf);
+				exists = !_wstat(module_full_path, &buf);
 
 				if (!exists)
 				{
-					g_detailmodules[g_num_of_detailmodules].hm_dll = LoadLibrary(module_full_path);
-
-					g_detailmodules[g_num_of_detailmodules].atsLoad = reinterpret_cast<DETAILMODULE_ATSLOAD>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "Load"));
-					g_detailmodules[g_num_of_detailmodules].atsDispose = reinterpret_cast<DETAILMODULE_ATSDISPOSE>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "Dispose"));
-					g_detailmodules[g_num_of_detailmodules].atsGetPluginVersion = reinterpret_cast<DETAILMODULE_ATSGETPLUGINVERSION>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "GetPluginVersion"));
-					g_detailmodules[g_num_of_detailmodules].atsSetVehicleSpec = reinterpret_cast<DETAILMODULE_ATSSETVEHICLESPEC>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "SetVehicleSpec"));
-					g_detailmodules[g_num_of_detailmodules].atsInitialize = reinterpret_cast<DETAILMODULE_ATSINITIALIZE>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "Initialize"));
-					g_detailmodules[g_num_of_detailmodules].atsElapse = reinterpret_cast<DETAILMODULE_ATSELAPSE>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "Elapse"));
-					g_detailmodules[g_num_of_detailmodules].atsSetPower = reinterpret_cast<DETAILMODULE_ATSSETPOWER>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "SetPower"));
-					g_detailmodules[g_num_of_detailmodules].atsSetBrake = reinterpret_cast<DETAILMODULE_ATSSETBRAKE>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "SetBrake"));
-					g_detailmodules[g_num_of_detailmodules].atsSetReverser = reinterpret_cast<DETAILMODULE_ATSSETREVERSER>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "SetReverser"));
-					g_detailmodules[g_num_of_detailmodules].atsKeyDown = reinterpret_cast<DETAILMODULE_ATSKEYDOWN>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "KeyDown"));
-					g_detailmodules[g_num_of_detailmodules].atsKeyUp = reinterpret_cast<DETAILMODULE_ATSKEYUP>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "KeyUp"));
-					g_detailmodules[g_num_of_detailmodules].atsHornBlow = reinterpret_cast<DETAILMODULE_ATSHORNBLOW>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "HornBlow"));
-					g_detailmodules[g_num_of_detailmodules].atsDoorOpen = reinterpret_cast<DETAILMODULE_ATSDOOROPEN>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "DoorOpen"));
-					g_detailmodules[g_num_of_detailmodules].atsDoorClose = reinterpret_cast<DETAILMODULE_ATSDOORCLOSE>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "DoorClose"));
-					g_detailmodules[g_num_of_detailmodules].atsSetSignal = reinterpret_cast<DETAILMODULE_ATSSETSIGNAL>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "SetSignal"));
-					g_detailmodules[g_num_of_detailmodules].atsSetBeaconData = reinterpret_cast<DETAILMODULE_ATSSETBEACONDATA>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "SetBeaconData"));
-
-					memset(&g_detailmodules[g_num_of_detailmodules].last_handle, 0, sizeof(ATS_HANDLES));
-
-					if (g_detailmodules[g_num_of_detailmodules].atsLoad != NULL)
-					{
-						g_detailmodules[g_num_of_detailmodules].atsLoad();
-					}
-
-					++g_num_of_detailmodules;
+					const auto title = TEXT("DetailSelector");
+					wchar_t body[512] = L"下記のATSプラグインが不足しています。\n"
+															"Failed to open the following path.\n\n";
+					wcscat_s(body, module_path_wcs);
+					MessageBox(NULL, body, title, MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
+					char* p = 0; *p = 1;
+					continue;
 				}
+				
+				g_detailmodules[g_num_of_detailmodules].hm_dll = LoadLibrary(module_full_path);
+
+				g_detailmodules[g_num_of_detailmodules].atsLoad = reinterpret_cast<DETAILMODULE_ATSLOAD>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "Load"));
+				g_detailmodules[g_num_of_detailmodules].atsDispose = reinterpret_cast<DETAILMODULE_ATSDISPOSE>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "Dispose"));
+				g_detailmodules[g_num_of_detailmodules].atsGetPluginVersion = reinterpret_cast<DETAILMODULE_ATSGETPLUGINVERSION>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "GetPluginVersion"));
+				g_detailmodules[g_num_of_detailmodules].atsSetVehicleSpec = reinterpret_cast<DETAILMODULE_ATSSETVEHICLESPEC>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "SetVehicleSpec"));
+				g_detailmodules[g_num_of_detailmodules].atsInitialize = reinterpret_cast<DETAILMODULE_ATSINITIALIZE>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "Initialize"));
+				g_detailmodules[g_num_of_detailmodules].atsElapse = reinterpret_cast<DETAILMODULE_ATSELAPSE>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "Elapse"));
+				g_detailmodules[g_num_of_detailmodules].atsSetPower = reinterpret_cast<DETAILMODULE_ATSSETPOWER>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "SetPower"));
+				g_detailmodules[g_num_of_detailmodules].atsSetBrake = reinterpret_cast<DETAILMODULE_ATSSETBRAKE>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "SetBrake"));
+				g_detailmodules[g_num_of_detailmodules].atsSetReverser = reinterpret_cast<DETAILMODULE_ATSSETREVERSER>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "SetReverser"));
+				g_detailmodules[g_num_of_detailmodules].atsKeyDown = reinterpret_cast<DETAILMODULE_ATSKEYDOWN>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "KeyDown"));
+				g_detailmodules[g_num_of_detailmodules].atsKeyUp = reinterpret_cast<DETAILMODULE_ATSKEYUP>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "KeyUp"));
+				g_detailmodules[g_num_of_detailmodules].atsHornBlow = reinterpret_cast<DETAILMODULE_ATSHORNBLOW>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "HornBlow"));
+				g_detailmodules[g_num_of_detailmodules].atsDoorOpen = reinterpret_cast<DETAILMODULE_ATSDOOROPEN>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "DoorOpen"));
+				g_detailmodules[g_num_of_detailmodules].atsDoorClose = reinterpret_cast<DETAILMODULE_ATSDOORCLOSE>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "DoorClose"));
+				g_detailmodules[g_num_of_detailmodules].atsSetSignal = reinterpret_cast<DETAILMODULE_ATSSETSIGNAL>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "SetSignal"));
+				g_detailmodules[g_num_of_detailmodules].atsSetBeaconData = reinterpret_cast<DETAILMODULE_ATSSETBEACONDATA>(GetProcAddress(g_detailmodules[g_num_of_detailmodules].hm_dll, "SetBeaconData"));
+
+				memset(&g_detailmodules[g_num_of_detailmodules].last_handle, 0, sizeof(ATS_HANDLES));
+
+				if (g_detailmodules[g_num_of_detailmodules].atsLoad != NULL)
+				{
+					g_detailmodules[g_num_of_detailmodules].atsLoad();
+				}
+
+				++g_num_of_detailmodules;
 			}
 		}
 
@@ -243,6 +256,7 @@ void WINAPI atsInitialize(int param)
 // Called every frame
 ATS_HANDLES WINAPI atsElapse(ATS_VEHICLESTATE vs, int* p_panel, int* p_sound)
 {
+	MessageBox(NULL, L"a", L"a", MB_OK | MB_ICONERROR);
 	ATS_HANDLES ret;
 
 	g_trigger.set_distance(vs.Location);
