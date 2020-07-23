@@ -1,4 +1,4 @@
-﻿#include "trigger.h"
+#include "trigger.h"
 
 #include "ats_define.hpp"
 #include "debug.h"
@@ -31,8 +31,8 @@ namespace config
 	{
 		namespace index
 		{
-			const int sotetsu[] = { 2, 5 };
-			const int jr[] = { 3, 7 };
+			const int sotetsu[] = { 4 };
+			const int jr[] = { 2, 5, 6 };
 		};
 	};
 
