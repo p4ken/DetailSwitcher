@@ -15,6 +15,8 @@ namespace config
 	{
 		namespace index
 		{
+			const int output_sotetsu = 244;
+			const int output_jr = 245;
 			const int output_company = 246;
 		};
 	};
@@ -148,15 +150,19 @@ bool trigger::is_enable(const int detail_index) const
 void trigger::output_company(int* p_panel) const
 {
 	// none
+	p_panel[config::panel::index::output_sotetsu] = 0;
+	p_panel[config::panel::index::output_jr] = 0;
 	int result = 0;
 	if (this->is_enable(config::details::index::sotetsu[0]))
 	{
 		// sotetsu
+		p_panel[config::panel::index::output_sotetsu] = 1;
 		result += 1;
 	}
 	if (this->is_enable(config::details::index::jr[0]))
 	{
 		// jr
+		p_panel[config::panel::index::output_jr] = 1;
 		result += 2;
 	}
 	p_panel[config::panel::index::output_company] = result;
