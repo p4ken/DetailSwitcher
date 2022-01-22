@@ -2,6 +2,8 @@
 
 Rock_On様のDetailManagerをベースに、相鉄JR直通線のための路線切替機能を追加しました。
 
+https://scrapbox.io/sj/路線切替
+
 ## 制作者
 
 ぴよ軒（路線切替機能のみ）
